@@ -5,6 +5,7 @@ export default function SchoolCatalog() {
   const [searchInput, setSearchInput] = useState('');
   const [sortColumn, setSortColumn] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [page, setPage] = useState(1);
 
 
 
@@ -50,6 +51,25 @@ export default function SchoolCatalog() {
     }
   };
 
+  // limit the data to 5 rows at a time
+  // Pagination
+  const PAGE_SIZE = 5;
+  const totalPages = Math.ceil(sortedCourses.length / PAGE_SIZE);
+  const currentPageCourses = sortedCourses.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // checks if buttons should be disabled
+  const hasMore = page * totalPages;
+  const hasLess = page > 1;
+
+  // handles next and previous button click
+  const nextPage = () => {
+    if (hasMore) setPage(page + 1);
+  };
+
+  const previousPage = () => {
+    if (hasLess) setPage(page - 1);
+  };
+
     return (
       <div className="school-catalog">
       <h1>School Catalog</h1>
@@ -71,7 +91,7 @@ export default function SchoolCatalog() {
           </tr>
         </thead>
         <tbody>
-          {sortedCourses.map((course, index) => (
+          {currentPageCourses.map((course, index) => (
             <tr key={index}>
               <td>{course.trimester}</td>
               <td>{course.courseNumber}</td>
@@ -86,8 +106,8 @@ export default function SchoolCatalog() {
         </tbody>  
       </table>
       <div className="pagination">
-        <button>Previous</button>
-        <button>Next</button>
+        <button onClick={previousPage} disabled={!hasLess}>Previous</button>
+        <button onClick={nextPage} disabled={!hasMore}>Next</button>
       </div>
     </div>
   );
